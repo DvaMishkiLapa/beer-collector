@@ -8,7 +8,7 @@ from sanic_openapi import openapi3_blueprint
 
 counter = Counter("sanic_requests_total",
                              "Track the total number of requests",
-                             ["method", "endpoint"])
+                             ["method"])
 
 
 app = Sanic(name='beer')
@@ -18,7 +18,7 @@ beer_url = "https://random-data-api.com/api/beer/random_beer"
 
 @app.middleware('request')
 async def track_requests(request):
-    counter.labels(method=request.method, endpoint=request.path).inc()
+    counter.labels(method=request.method).inc()
 
 
 @app.listener('before_server_start')
@@ -51,7 +51,7 @@ async def get_stats(request):
     '''
     Метод показывает сколько запросов было на сервер (с момента запуска)
     '''
-    count_request = counter.labels(method=request.method, endpoint=request.path)._value.get()
+    count_request = counter.labels(method=request.method)._value.get()
     return json([{'count_request': count_request}])
 
 
