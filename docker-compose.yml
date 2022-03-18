@@ -1,0 +1,22 @@
+version: "3.9"
+
+x-common-variables:
+    &common-variables
+    TZ: "Europe/Moscow"
+
+services:
+
+    beer:
+        build: ./beer
+        volumes:
+            - ./beer/app:/app
+        ports:
+            - "8000:8000"
+        networks:
+            - sanic-network
+        environment:
+            <<: *common-variables
+
+networks:
+    sanic-network:
+        driver: bridge

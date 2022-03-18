@@ -1,12 +1,12 @@
 import asyncio
 
 import aiohttp
-import prometheus_client as prometheus
+from prometheus_client import Counter
 from sanic import Sanic
 from sanic.response import json
 from sanic_openapi import openapi3_blueprint
 
-counter = prometheus.Counter("sanic_requests_total",
+counter = Counter("sanic_requests_total",
                              "Track the total number of requests",
                              ["method", "endpoint"])
 
