@@ -4,6 +4,7 @@ import aiohttp
 import prometheus_client as prometheus
 from sanic import Sanic
 from sanic.response import json
+from sanic_openapi import openapi3_blueprint
 
 counter = prometheus.Counter("sanic_requests_total",
                              "Track the total number of requests",
@@ -11,6 +12,7 @@ counter = prometheus.Counter("sanic_requests_total",
 
 
 app = Sanic(name='beer')
+app.blueprint(openapi3_blueprint)
 beer_url = "https://random-data-api.com/api/beer/random_beer"
 
 
