@@ -32,6 +32,9 @@ def finish(app, loop):
 
 @app.get("/get_new_beers")
 async def get_beer(request):
+    '''
+    Метод выгружает асинхронно 5 новых сортов пива, выдает ответ в виде JSON с полями brand, name и alcohol
+    '''
     tasks = []
     for x in range(5):
         tasks.append(asyncio.ensure_future(get_beer(app.ctx.httpSession, beer_url)))
@@ -43,6 +46,9 @@ async def get_beer(request):
 
 @app.get("/stats")
 async def get_stats(request):
+    '''
+    Метод показывает сколько запросов было на сервер (с момента запуска)
+    '''
     count_request = counter.labels(method=request.method, endpoint=request.path)._value.get()
     return json([{'count_request': count_request}])
 
