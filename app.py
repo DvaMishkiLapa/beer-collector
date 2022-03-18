@@ -1,11 +1,23 @@
+import asyncio
+
 import aiohttp
+import prometheus_client as prometheus
 from sanic import Sanic
 from sanic.response import json
-import asyncio
+
+counter = prometheus.Counter("sanic_requests_total",
+                             "Track the total number of requests",
+                             ["method", "endpoint"])
 
 
 app = Sanic(name='beer')
 beer_url = "https://random-data-api.com/api/beer/random_beer"
+
+
+@app.middleware('request')
+async def track_requests(request):
+    counter.labels(method=request.method, endpoint=request.path).inc()
+
 
 @app.listener('before_server_start')
 def init(app, loop):
@@ -29,8 +41,15 @@ async def get_beer(request):
     return json(ans)
 
 
+@app.get("/stats")
+async def get_stats(request):
+    count_request = counter.labels(method=request.method, endpoint=request.path)._value.get()
+    return json([{'count_request': count_request}])
+
+
 def extract_alcohol_float(beers_list):
     return float(beers_list['alcohol'][:-1])
+
 
 async def get_beer(session, url):
     async with session.get(url) as resp:
